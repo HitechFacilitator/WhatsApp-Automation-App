@@ -2,12 +2,15 @@
 from utils.oppenZapp import *
 from multiprocessing import Process, Lock
 
+from controller.messageController import *
+from controller.statusController import *
+
 if __name__ == "__main__" :
     # lock = Lock()
-    # createStatus("/home/hitechangel/Pictures/chat2.png", True, "My App")
+    createStatus("/home/hitechangel/Pictures/chat2.png", True, "My App")
+    createMessage("Rebec","Hello")
     # createMessage("Rebec","Hello")
-    # createMessage("Rebec","Hello")
-    # createMessage("Artino","Am Good","04:28")
+    createMessage("Artino","Am Good","04:28")
 
     # createStatus("/home/hitechangel/Pictures/chat3.png", True, "My App 3", "04:29")
 
@@ -29,7 +32,7 @@ if __name__ == "__main__" :
     
     # lok=False
     # OppenClosedZapp(lok)
-    OppenWhatsapp() 
+    # OppenWhatsapp() 
     # verifyOppenZapp()
     # sendMessages("prince","loki")
     # createStatus("/home/hitechangel/Pictures/chat2.png", True, "My App")
