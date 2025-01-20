@@ -1,44 +1,39 @@
-# https:
-from utils.oppenZapp import *
-from multiprocessing import Process, Lock
+import customtkinter as ctk
+import cv2
+from PIL import Image, ImageTk
+import threading
+from tkinter import PhotoImage, Label
+from view.homeView import show_home_interface, play_video
+from view.messageView import show_message_interface
+from view.statusView import show_status_interface
 
-from controller.messageController import *
-from controller.statusController import *
+class AppController:
+    def __init__(self, root):
+        self.root = root
 
-if __name__ == "__main__" :
-    # lock = Lock()
-    createStatus("/home/hitechangel/Pictures/chat2.png", True, "My App")
-    createMessage("Rebec","Hello")
-    # createMessage("Rebec","Hello")
-    createMessage("Artino","Am Good","04:28")
+    def show_home(self):
+        show_home_interface(self.root, self)
 
-    # createStatus("/home/hitechangel/Pictures/chat3.png", True, "My App 3", "04:29")
+    def show_message_dashboard(self):
+        show_message_interface(self.root, self)
 
-    # scheduleMessages(lock)
-    
-    # process1 = Process(target=scheduleStatus, args=(lock,))
-    # print("Status scheduled ok")
-    # process2 = Process(target=scheduleMessages, args=(lock,))
-    # print("Message scheduled ok")
+    def show_status_dashboard(self):
+        show_status_interface(self.root, self)
 
-    # # Start the processes
-    # process1.start()
-    # process2.start()
 
-    # # Wait for both processes to complete
-    # process1.join()
-    # process2.join()
-    
-    
-    # lok=False
-    # OppenClosedZapp(lok)
-    # OppenWhatsapp() 
-    # verifyOppenZapp()
-    # sendMessages("prince","loki")
-    # createStatus("/home/hitechangel/Pictures/chat2.png", True, "My App")
-    
-    # scheduleStatus()
-    
-    # createMessage("Python","Testing connection with database","00:36")
-    # sleep(3)
-    # scheduleMessages()
+# Main Application
+if __name__ == "__main__":
+    app = ctk.CTk()
+    app.title("WhatsApp Automation")
+    app.geometry("1140x750")
+    app.iconphoto(False, PhotoImage(file="view/app_logo.png"))  # Replace with actual logo path
+    ctk.set_appearance_mode("dark")
+    app.resizable(False, False)  # Prevent window resizing
+
+    controller = AppController(app)
+    play_video(app, "view/welcome_video.mp4", controller.show_home)
+    # controller.show_home()  # Start with the home interface
+
+    app.mainloop()
+
+

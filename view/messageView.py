@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import Canvas, Frame, Scrollbar, Label
 import tkinter as tk
 from PIL import Image, ImageTk
+from utils.dbInteraction import *
 
 def show_message_interface(app, controller):
     for widget in app.winfo_children():
@@ -12,7 +13,7 @@ def show_message_interface(app, controller):
     message_frame.pack(fill="both", expand=True)
 
     # Background Image
-    background_image = ImageTk.PhotoImage(Image.open("messageBG.png"))  # Replace with actual image path
+    background_image = ImageTk.PhotoImage(Image.open("view/messageBG.png"))  # Replace with actual image path
     background_label = Label(message_frame, image=background_image)
     background_label.image = background_image
     background_label.place(relwidth=1, relheight=1)

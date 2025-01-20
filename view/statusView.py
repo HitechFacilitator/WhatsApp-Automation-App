@@ -12,7 +12,7 @@ def show_status_interface(app, controller):
     status_frame.pack(fill="both", expand=True)
 
     # Background Image
-    background_image = ImageTk.PhotoImage(Image.open("statusBG.png"))  # Replace with actual image path
+    background_image = ImageTk.PhotoImage(Image.open("view/statusBG.png"))  # Replace with actual image path
     background_label = Label(status_frame, image=background_image)
     background_label.image = background_image
     background_label.place(relwidth=1, relheight=1)

@@ -33,7 +33,7 @@ def show_home_interface(app, controller):
         widget.pack_forget()
 
     # Background Image
-    bg_image = ImageTk.PhotoImage(Image.open("homeBG.png"))  # Replace with actual path
+    bg_image = ImageTk.PhotoImage(Image.open("view/homeBG.png"))  # Replace with actual path
     bg_label = Label(app, image=bg_image)
     bg_label.image = bg_image
     bg_label.place(relwidth=1, relheight=1)
@@ -43,7 +43,7 @@ def show_home_interface(app, controller):
     slider_frame.place(relx=0.5, rely=0.2, anchor="center")
 
     # Slider Images with Text Overlay
-    slide_images = ["slide1.png", "slide2.png", "slide3.png"]  # Replace with actual paths
+    slide_images = ["view/slide1.png", "view/slide2.png", "view/slide3.png"]  # Replace with actual paths
     slide_texts = [
         "Automate Your WhatsApp Experience 🌟\nPlan, schedule, and let WASAM do the rest!",
         "Keep Your WhatsApp Status Fresh 🔄\nPost statuses automatically, exactly when you want!",
@@ -87,7 +87,7 @@ def show_home_interface(app, controller):
     msg_header = ctk.CTkLabel(message_card, text="Automated Messages", font=("Arial", 18, "bold"))
     msg_header.pack(pady=10)
 
-    msg_img = ImageTk.PhotoImage(Image.open("message_image.png").resize((250, 150)))  # Replace with actual path
+    msg_img = ImageTk.PhotoImage(Image.open("view/message_image.png").resize((250, 150)))  # Replace with actual path
     msg_image = Label(message_card, image=msg_img, bg="gray30")
     msg_image.image = msg_img
     msg_image.pack(pady=10)
@@ -102,7 +102,7 @@ def show_home_interface(app, controller):
     status_header = ctk.CTkLabel(status_card, text="Post Status", font=("Arial", 18, "bold"))
     status_header.pack(pady=10)
 
-    status_img = ImageTk.PhotoImage(Image.open("status_image.png").resize((250, 150)))  # Replace with actual path
+    status_img = ImageTk.PhotoImage(Image.open("view/status_image.png").resize((250, 150)))  # Replace with actual path
     status_image = Label(status_card, image=status_img, bg="gray30")
     status_image.image = status_img
     status_image.pack(pady=10)
