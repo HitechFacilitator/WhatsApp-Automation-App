@@ -2,7 +2,8 @@ import customtkinter as ctk
 from tkinter import Canvas, Frame, Scrollbar, Label
 import tkinter as tk
 from PIL import Image, ImageTk
-from utils.dbInteraction import *
+from controller.messageController import *
+from utils.notifications import *
 
 def show_message_interface(app, controller):
     for widget in app.winfo_children():
@@ -50,11 +51,11 @@ def show_message_interface(app, controller):
     # Schedule Time Field
     schedule_label = ctk.CTkLabel(creation_frame, text="Schedule Time:", font=("Arial", 14), text_color="#075E54")
     schedule_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
-    schedule_entry = ctk.CTkEntry(creation_frame, width=300, placeholder_text="Time in the form HH:MM")
-    schedule_entry.grid(row=2, column=1, padx=10, pady=10, sticky="w")
+    scheduleTime_entry = ctk.CTkEntry(creation_frame, width=300, placeholder_text="Time in the form HH:MM")
+    scheduleTime_entry.grid(row=2, column=1, padx=10, pady=10, sticky="w")
 
     # Schedule Button
-    schedule_button = ctk.CTkButton(creation_frame, text="Schedule", width=100, fg_color="#25D366", hover_color="#128C7E", command=lambda: print("Message Scheduled"))
+    schedule_button = ctk.CTkButton(creation_frame, text="Schedule", width=100, fg_color="#25D366", hover_color="#128C7E", command=lambda: add_a_message(recipient_entry.get(), message_entry.get("1.0", "end"), scheduleTime_entry.get()))
     schedule_button.grid(row=3, column=1, padx=10, pady=10, sticky="e")
 
     # Card Section
@@ -77,24 +78,30 @@ def show_message_interface(app, controller):
     message_table = ctk.CTkFrame(table_canvas, fg_color="white")
     table_canvas.create_window((0, 0), window=message_table, anchor="nw")
 
-    # Table/List for Messages
-    # message_table = ctk.CTkFrame(card_frame, fg_color="white", corner_radius=10)
-    # message_table.pack(fill="both", expand=True, padx=10, pady=10)
-
     headers = ["Recipient", "Message", "Scheduled Time", "Actions"]
     for header in headers:
         header_label = ctk.CTkLabel(message_table, text=header, font=("Arial", 14, "bold"), text_color="#075E54")
         header_label.grid(row=0, column=headers.index(header), padx=65, pady=5)
 
-    # Example Data
-    example_data = [
-        {"recipient": "John", "message": "Hello John!", "time": "2025-01-15 10:00 AM"},
-        {"recipient": "Doe", "message": "Meeting Reminder", "time": "2025-01-16 02:00 PM"}
-    ]
+    allMessages = getAllMessages()
 
-    for idx, row in enumerate(example_data):
-        ctk.CTkLabel(message_table, text=row["recipient"], font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=0, padx=5, pady=5)
-        ctk.CTkLabel(message_table, text=row["message"], font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=1, padx=5, pady=5)
-        ctk.CTkLabel(message_table, text=row["time"], font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=2, padx=5, pady=5)
+    idx=0
+    for msg in allMessages:
+        ctk.CTkLabel(message_table, text=msg.receiver, font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=0, padx=5, pady=5)
+        ctk.CTkLabel(message_table, text=msg.content, font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=1, padx=5, pady=5)
+        ctk.CTkLabel(message_table, text=msg.send_time, font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=2, padx=5, pady=5)
         ctk.CTkButton(message_table, text="Edit", width=50, fg_color="#25D366", hover_color="#128C7E").grid(row=idx+1, column=3, padx=2, pady=5)
         ctk.CTkButton(message_table, text="Delete", width=50, fg_color="#FF0000", hover_color="#CC0000").grid(row=idx+1, column=4, padx=2, pady=5)
+        idx=idx+1
+
+def add_a_message(recip, msg, time):
+    if not recip:
+        on_notify("The Receiver name or number is needed")
+        return
+    if msg is "\n":
+        on_notify("The message content field is empty")
+        return
+    createMessage(recip, msg, time)
+    show_notification("Schedule Message\nCreated Successfully", 2)
+
+

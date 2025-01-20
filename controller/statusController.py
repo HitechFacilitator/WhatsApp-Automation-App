@@ -137,3 +137,9 @@ def scheduleStatus(lock):
         except Exception as e:
             print(f"Error running scheduled tasks: {e}")
             sleep(1)
+
+def getAllStatus():
+    session = Session()
+    allStatus = session.query(Status).all()
+    return allStatus
+

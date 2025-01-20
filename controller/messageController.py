@@ -11,6 +11,10 @@ def createMessage(contact, msg, time=""):
     session = Session()
     if time == "":
         time = (datetime.datetime.now() + datetime.timedelta(minutes=1)).strftime("%H:%M")
+
+    if not contact or not msg:
+        pyautogui.alert("Enter atleast the Receiver name or number\nand the message you wanna send")
+        return
     
     allStatus = session.query(Status).all()
     allMessages = session.query(Message).all()
@@ -123,4 +127,8 @@ def scheduleMessages(lock):
             print(f"Error running scheduled tasks: {e}")
             sleep(1)
 
+def getAllMessages():
+    session = Session()
+    allMessages = session.query(Message).all()
+    return allMessages
 

@@ -2,6 +2,8 @@ import customtkinter as ctk
 from tkinter import Canvas, Frame, Scrollbar, Label
 import tkinter as tk
 from PIL import Image, ImageTk
+from controller.statusController import *
+from utils.notifications import *
 
 def show_status_interface(app, controller):
     for widget in app.winfo_children():
@@ -76,11 +78,11 @@ def show_status_interface(app, controller):
     # Schedule Time Field
     schedule_label = ctk.CTkLabel(creation_frame, text="Schedule Time:", font=("Arial", 14), text_color="#075E54")
     schedule_label.grid(row=6, column=0, padx=10, pady=10, sticky="w")
-    schedule_entry = ctk.CTkEntry(creation_frame, width=300, placeholder_text="Time in the form HH:MM")
-    schedule_entry.grid(row=6, column=1, padx=10, pady=10, sticky="w")
+    scheduleTime_entry = ctk.CTkEntry(creation_frame, width=300, placeholder_text="Time in the form HH:MM")
+    scheduleTime_entry.grid(row=6, column=1, padx=10, pady=10, sticky="w")
 
     # Schedule Button
-    schedule_button = ctk.CTkButton(creation_frame, text="Schedule", width=100, fg_color="#25D366", hover_color="#128C7E", command=lambda: print("Message Scheduled"))
+    schedule_button = ctk.CTkButton(creation_frame, text="Schedule", width=100, fg_color="#25D366", hover_color="#128C7E", command=lambda: add_a_status(file_entry.get(),statusMsg_entry.get("1.0", "end"),text_entry.get("1.0", "end"),scheduleTime_entry.get()))
     schedule_button.grid(row=7, column=1, padx=10, pady=10, sticky="e")
 
     nb_label = ctk.CTkLabel(creation_frame, text="NB\nYou cannot create two status schedule type\n(i.e Media and Text status type) at a time", font=("Arial", 14), text_color="brown")
@@ -111,18 +113,34 @@ def show_status_interface(app, controller):
         header_label = ctk.CTkLabel(status_table, text=header, font=("Arial", 14, "bold"), text_color="#075E54")
         header_label.grid(row=0, column=headers.index(header), padx=55, pady=10)
 
-    # Example Data
-    example_data = [
-        {"media": "False", "content_or_path": "Hello John!", "mediaText":"kdjhsdjgshdgh", "time": "2025-01-15 10:00 AM"},
-        {"media": "False", "content_or_path": "Hello John!", "mediaText":"kdjhsdjgshdgh", "time": "2025-01-15 10:00 AM"},
-        {"media": "False", "content_or_path": "Hello John!", "mediaText":"kdjhsdjgshdgh", "time": "2025-01-15 10:00 AM"},
-        {"media": "True", "content_or_path": "I am the\ngod of war", "mediaText":"Roky boy", "time": "2025-04-15 21:23 AM"}
-    ]
+    allStatus = getAllStatus()
 
-    for idx, row in enumerate(example_data):
-        ctk.CTkLabel(status_table, text=row["media"], font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=0, padx=7, pady=5)
-        ctk.CTkLabel(status_table, text=row["content_or_path"], font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=1, padx=7, pady=5)
-        ctk.CTkLabel(status_table, text=row["mediaText"], font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=2, padx=7, pady=5)
-        ctk.CTkLabel(status_table, text=row["time"], font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=3, padx=7, pady=5)
+    idx=0
+    for stat in allStatus:
+        ctk.CTkLabel(status_table, text=stat.media, font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=0, padx=7, pady=5)
+        ctk.CTkLabel(status_table, text=stat.content_or_path, font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=1, padx=7, pady=5)
+        ctk.CTkLabel(status_table, text=stat.mediaText, font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=2, padx=7, pady=5)
+        ctk.CTkLabel(status_table, text=stat.send_time, font=("Arial", 12), text_color="#075E54").grid(row=idx+1, column=3, padx=7, pady=5)
         ctk.CTkButton(status_table, text="Edit", width=50, fg_color="#25D366", hover_color="#128C7E").grid(row=idx+1, column=4, padx=2, pady=5)
         ctk.CTkButton(status_table, text="Delete", width=50, fg_color="#FF0000", hover_color="#CC0000").grid(row=idx+1, column=5, padx=2, pady=5)
+        idx=idx+1
+
+def add_a_status(path="", msg="", text="", time=""):
+    if path and text is not "\n":
+        on_notify("Look at the NB below the Schedule Button")
+        return
+    elif text is not "\n" and msg is not "\n":
+        on_notify("Look at the NB below the Schedule Button\nFields of different types can't\n be filled simultaneously")
+        return
+    if not path and msg is "\n" and text is "\n":
+        on_notify("What do you want us to post?\n Your fields are empty")
+        return
+    if path:
+        createStatus(path, True, msg, time)
+        show_notification("Schedule Status\nCreated Successfully", 2)
+    elif text is not "\n" :
+        createStatus(text, False, "", time)
+        show_notification("Schedule Status\nCreated Successfully", 2)
+    else:
+        print("...............")
+
