@@ -1,5 +1,6 @@
 import customtkinter as ctk
-from tkinter import Label
+from tkinter import Canvas, Frame, Scrollbar, Label
+import tkinter as tk
 from PIL import Image, ImageTk
 
 def show_message_interface(app, controller):
@@ -57,19 +58,32 @@ def show_message_interface(app, controller):
 
     # Card Section
     card_frame = ctk.CTkFrame(message_frame, fg_color="#DCF8C6", corner_radius=15, width=800, height=400)  # Light green background
-    card_frame.pack(pady=20, padx=20)
+    card_frame.pack(pady=5, padx=5, fill="x", expand=True)
 
     title_label = ctk.CTkLabel(card_frame, text="Scheduled Messages", font=("Arial", 20, "bold"), text_color="#075E54")
     title_label.pack(pady=10)
 
+    # Add Scrollable Area for Status Table
+    table_canvas = Canvas(card_frame, bg="white", highlightthickness=0)
+    table_canvas.pack(side="left", fill="both", expand=True)
+
+    table_scrollbar = Scrollbar(card_frame, orient="vertical", command=table_canvas.yview)
+    table_scrollbar.pack(side="right", fill="y")
+
+    table_canvas.configure(yscrollcommand=table_scrollbar.set)
+    table_canvas.bind('<Configure>', lambda e: table_canvas.configure(scrollregion=table_canvas.bbox("all")))
+
+    message_table = ctk.CTkFrame(table_canvas, fg_color="white")
+    table_canvas.create_window((0, 0), window=message_table, anchor="nw")
+
     # Table/List for Messages
-    message_table = ctk.CTkFrame(card_frame, fg_color="white", corner_radius=10)
-    message_table.pack(fill="both", expand=True, padx=10, pady=10)
+    # message_table = ctk.CTkFrame(card_frame, fg_color="white", corner_radius=10)
+    # message_table.pack(fill="both", expand=True, padx=10, pady=10)
 
     headers = ["Recipient", "Message", "Scheduled Time", "Actions"]
     for header in headers:
         header_label = ctk.CTkLabel(message_table, text=header, font=("Arial", 14, "bold"), text_color="#075E54")
-        header_label.grid(row=0, column=headers.index(header), padx=5, pady=5)
+        header_label.grid(row=0, column=headers.index(header), padx=65, pady=5)
 
     # Example Data
     example_data = [
