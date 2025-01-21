@@ -55,7 +55,7 @@ def show_message_interface(app, controller):
     scheduleTime_entry.grid(row=2, column=1, padx=10, pady=10, sticky="w")
 
     # Schedule Button
-    schedule_button = ctk.CTkButton(creation_frame, text="Schedule", width=100, fg_color="#25D366", hover_color="#128C7E", command=lambda: add_a_message(recipient_entry.get(), message_entry.get("1.0", "end"), scheduleTime_entry.get()))
+    schedule_button = ctk.CTkButton(creation_frame, text="Schedule", width=100, fg_color="#25D366", hover_color="#128C7E", command=lambda: add_a_message(recipient_entry.get(), message_entry.get("1.0", "end"), scheduleTime_entry.get(), message_table))
     schedule_button.grid(row=3, column=1, padx=10, pady=10, sticky="e")
 
     # Card Section
@@ -78,6 +78,24 @@ def show_message_interface(app, controller):
     message_table = ctk.CTkFrame(table_canvas, fg_color="white")
     table_canvas.create_window((0, 0), window=message_table, anchor="nw")
 
+    display_message_table(message_table)
+
+def add_a_message(recip, msg, time, message_table):
+    if not recip:
+        on_notify("The Receiver name or number is needed", "red")
+        return
+    if msg == "\n":
+        on_notify("The message content field is empty", "red")
+        return
+    flag = createMessage(recip, msg, time)
+    print(flag)
+    if flag != "" and flag != None:
+        on_notify(flag, "orange", 400,115)
+        return
+    show_notification("Schedule Message\nCreated Successfully", 2)
+    display_message_table(message_table)
+
+def display_message_table(message_table):
     headers = ["Recipient", "Message", "Scheduled Time", "Actions"]
     for header in headers:
         header_label = ctk.CTkLabel(message_table, text=header, font=("Arial", 14, "bold"), text_color="#075E54")
@@ -93,15 +111,4 @@ def show_message_interface(app, controller):
         ctk.CTkButton(message_table, text="Edit", width=50, fg_color="#25D366", hover_color="#128C7E").grid(row=idx+1, column=3, padx=2, pady=5)
         ctk.CTkButton(message_table, text="Delete", width=50, fg_color="#FF0000", hover_color="#CC0000").grid(row=idx+1, column=4, padx=2, pady=5)
         idx=idx+1
-
-def add_a_message(recip, msg, time):
-    if not recip:
-        on_notify("The Receiver name or number is needed")
-        return
-    if msg is "\n":
-        on_notify("The message content field is empty")
-        return
-    createMessage(recip, msg, time)
-    show_notification("Schedule Message\nCreated Successfully", 2)
-
 

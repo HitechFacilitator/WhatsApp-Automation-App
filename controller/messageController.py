@@ -21,14 +21,16 @@ def createMessage(contact, msg, time=""):
 
     for statu in allStatus:
         if statu.send_time == time :
-            pyautogui.alert("Can't create the message '"+msg+"' to be delivered to '"+contact+"'\n A Status has already been planned at that same time")
+            alertMsg = "Can't create the message '"+msg+"' to be delivered to '"+contact+"'\n A Status has already been planned at that same time"
+            # pyautogui.alert()
             print("Task with thesame time already exist")
-            return
+            return alertMsg
     for messag in allMessages:
         if messag.send_time == time :
-            pyautogui.alert("Can't create the message '"+msg+"' to be delivered to '"+contact+"'\n A Message has already been planned at that same time")
+            alertMsg = "Can't create the message '"+msg+"' to be delivered to '"+contact+"'\n A Message has already been planned at that same time"
+            # pyautogui.alert()
             print("Task with thesame time already exist")
-            return
+            return alertMsg
 
     # Create a new message
     new_message = Message(

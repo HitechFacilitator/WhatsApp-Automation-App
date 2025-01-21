@@ -9,6 +9,8 @@ def show_status_interface(app, controller):
     for widget in app.winfo_children():
         widget.pack_forget()
 
+    on_notify("NB \nAutomated Status is not available for the Whatsapp Destop App\nOnly Available on WhatsApp Web" ,"white", 500, 150)
+
     # Background Frame
     status_frame = ctk.CTkFrame(app, fg_color="#075E54")  # WhatsApp dark green
     status_frame.pack(fill="both", expand=True)
@@ -82,7 +84,7 @@ def show_status_interface(app, controller):
     scheduleTime_entry.grid(row=6, column=1, padx=10, pady=10, sticky="w")
 
     # Schedule Button
-    schedule_button = ctk.CTkButton(creation_frame, text="Schedule", width=100, fg_color="#25D366", hover_color="#128C7E", command=lambda: add_a_status(file_entry.get(),statusMsg_entry.get("1.0", "end"),text_entry.get("1.0", "end"),scheduleTime_entry.get()))
+    schedule_button = ctk.CTkButton(creation_frame, text="Schedule", width=100, fg_color="#25D366", hover_color="#128C7E", command=lambda: add_a_status(status_table, file_entry.get(),statusMsg_entry.get("1.0", "end"),text_entry.get("1.0", "end"),scheduleTime_entry.get()))
     schedule_button.grid(row=7, column=1, padx=10, pady=10, sticky="e")
 
     nb_label = ctk.CTkLabel(creation_frame, text="NB\nYou cannot create two status schedule type\n(i.e Media and Text status type) at a time", font=("Arial", 14), text_color="brown")
@@ -108,6 +110,35 @@ def show_status_interface(app, controller):
     status_table = ctk.CTkFrame(table_canvas, fg_color="white")
     table_canvas.create_window((0, 0), window=status_table, anchor="nw")
 
+    display_status_table(status_table)
+
+def add_a_status(status_table, path="", msg="", text="", time=""):
+    if path and text != "\n":
+        on_notify("Look at the NB below the Schedule Button", "red")
+        return
+    elif text != "\n" and msg != "\n":
+        on_notify("Look at the NB below the Schedule Button\nFields of different types can't\n be filled simultaneously", "red")
+        return
+    if not path and msg == "\n" and text == "\n":
+        on_notify("What do you want us to post?\n Your fields are empty", "red")
+        return
+    if path:
+        flag = createStatus(path, True, msg, time)
+        if flag != "" and flag != None:
+            on_notify(flag, "orange", 400, 115)
+            return
+        show_notification("Schedule Status\nCreated Successfully", 2)
+    elif text != "\n" :
+        flag = createStatus(text, False, "", time)
+        if flag != "" and flag != None:
+            on_notify(flag, "orange", 400, 115)
+            return
+        show_notification("Schedule Status\nCreated Successfully", 2)
+    else:
+        print("...............")
+    display_status_table(status_table)
+
+def display_status_table(status_table):
     headers = ["Media?", "Path or Content", "Media message", "Scheduled Time", "Actions"]
     for header in headers:
         header_label = ctk.CTkLabel(status_table, text=header, font=("Arial", 14, "bold"), text_color="#075E54")
@@ -124,23 +155,3 @@ def show_status_interface(app, controller):
         ctk.CTkButton(status_table, text="Edit", width=50, fg_color="#25D366", hover_color="#128C7E").grid(row=idx+1, column=4, padx=2, pady=5)
         ctk.CTkButton(status_table, text="Delete", width=50, fg_color="#FF0000", hover_color="#CC0000").grid(row=idx+1, column=5, padx=2, pady=5)
         idx=idx+1
-
-def add_a_status(path="", msg="", text="", time=""):
-    if path and text is not "\n":
-        on_notify("Look at the NB below the Schedule Button")
-        return
-    elif text is not "\n" and msg is not "\n":
-        on_notify("Look at the NB below the Schedule Button\nFields of different types can't\n be filled simultaneously")
-        return
-    if not path and msg is "\n" and text is "\n":
-        on_notify("What do you want us to post?\n Your fields are empty")
-        return
-    if path:
-        createStatus(path, True, msg, time)
-        show_notification("Schedule Status\nCreated Successfully", 2)
-    elif text is not "\n" :
-        createStatus(text, False, "", time)
-        show_notification("Schedule Status\nCreated Successfully", 2)
-    else:
-        print("...............")
-

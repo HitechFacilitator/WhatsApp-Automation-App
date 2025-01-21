@@ -9,7 +9,7 @@ from utils.oppenZapp import *
 oppened = False
 
 def createStatus(content, media=True, text="", time=""):
-    pyautogui.alert("NB : Automated Status is not available for the Whatsapp Destop App\n\tOnly Available on WhatsApp Web")
+    # pyautogui.alert("NB : Automated Status is not available for the Whatsapp Destop App\n\tOnly Available on WhatsApp Web")
 
     session = Session()
     if time == "":
@@ -20,14 +20,16 @@ def createStatus(content, media=True, text="", time=""):
 
     for statu in allStatus:
         if statu.send_time == time :
-            pyautogui.alert("Can't create the status with content '"+content+"'\n A Status has already been planned at that same time")
+            alertMsg = "Can't create the status with content '"+content+"'\n A Status has already been planned at that same time"
+            # pyautogui.alert(alertMsg)
             print("Task with thesame time already exist")
-            return
+            return alertMsg
     for messag in allMessages:
         if messag.send_time == time :
-            pyautogui.alert("Can't create the status with content '"+content+"'\n A Message has already been planned at that same time")
+            alertMsg = "Can't create the status with content '"+content+"'\n A Message has already been planned at that same time"
+            # pyautogui.alert(alertMsg)
             print("Task with thesame time already exist")
-            return
+            return alertMsg
     
     # Create a new status
     new_status = Status(

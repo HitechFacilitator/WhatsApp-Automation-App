@@ -6,6 +6,7 @@ from tkinter import PhotoImage, Label
 from view.homeView import show_home_interface, play_video
 from view.messageView import show_message_interface
 from view.statusView import show_status_interface
+# from utils.notifications import on_notify
 
 class AppController:
     def __init__(self, root):
