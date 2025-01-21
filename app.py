@@ -29,7 +29,7 @@ if __name__ == "__main__":
     app.geometry("1140x750")
     app.iconphoto(False, PhotoImage(file="view/app_logo.png"))  # Replace with actual logo path
     ctk.set_appearance_mode("dark")
-    app.resizable(False, False)  # Prevent window resizing
+    # app.resizable(False, False)  # Prevent window resizing
 
     controller = AppController(app)
     play_video(app, "view/welcome_video.mp4", controller.show_home)

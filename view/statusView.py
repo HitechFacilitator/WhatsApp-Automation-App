@@ -1,11 +1,17 @@
 import customtkinter as ctk
 from tkinter import Canvas, Frame, Scrollbar, Label
 import tkinter as tk
+import threading
 from PIL import Image, ImageTk
 from controller.statusController import *
+from multiprocessing import Lock
 from utils.notifications import *
 
 def show_status_interface(app, controller):
+    lock = Lock()
+    # Create a threading Event to signal when to stop the scheduler
+    stop_event2 = threading.Event()
+
     for widget in app.winfo_children():
         widget.pack_forget()
 
@@ -31,7 +37,9 @@ def show_status_interface(app, controller):
     header_label = ctk.CTkLabel(header_frame, text="Status Dashboard", font=("Arial", 24, "bold"), text_color="white")
     header_label.pack(side="left", padx=20)
 
-    start_scheduler_button = ctk.CTkButton(header_frame, text="Start Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: print("Scheduler Started"))
+    stop_scheduler_button = ctk.CTkButton(header_frame, text="Stop Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: stop_scheduler(stop_event2))
+    stop_scheduler_button.pack(side="right", padx=10, pady=20)
+    start_scheduler_button = ctk.CTkButton(header_frame, text="Start Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: startScheduler(lock, stop_event2))
     start_scheduler_button.pack(side="right", padx=10, pady=20)
 
     # Status Creation Section
@@ -84,7 +92,7 @@ def show_status_interface(app, controller):
     scheduleTime_entry.grid(row=6, column=1, padx=10, pady=10, sticky="w")
 
     # Schedule Button
-    schedule_button = ctk.CTkButton(creation_frame, text="Schedule", width=100, fg_color="#25D366", hover_color="#128C7E", command=lambda: add_a_status(status_table, file_entry.get(),statusMsg_entry.get("1.0", "end"),text_entry.get("1.0", "end"),scheduleTime_entry.get()))
+    schedule_button = ctk.CTkButton(creation_frame, text="Schedule", width=100, fg_color="#25D366", hover_color="#128C7E", command=lambda: add_a_status(stop_event2, status_table, file_entry.get(),statusMsg_entry.get("1.0", "end"),text_entry.get("1.0", "end"),scheduleTime_entry.get()))
     schedule_button.grid(row=7, column=1, padx=10, pady=10, sticky="e")
 
     nb_label = ctk.CTkLabel(creation_frame, text="NB\nYou cannot create two status schedule type\n(i.e Media and Text status type) at a time", font=("Arial", 14), text_color="brown")
@@ -112,7 +120,7 @@ def show_status_interface(app, controller):
 
     display_status_table(status_table)
 
-def add_a_status(status_table, path="", msg="", text="", time=""):
+def add_a_status(stop_event2, status_table, path="", msg="", text="", time=""):
     if path and text != "\n":
         on_notify("Look at the NB below the Schedule Button", "red")
         return
@@ -128,15 +136,21 @@ def add_a_status(status_table, path="", msg="", text="", time=""):
             on_notify(flag, "orange", 400, 115)
             return
         show_notification("Schedule Status\nCreated Successfully", 2)
+        stop_scheduler(stop_event2)
     elif text != "\n" :
         flag = createStatus(text, False, "", time)
         if flag != "" and flag != None:
             on_notify(flag, "orange", 400, 115)
             return
-        show_notification("Schedule Status\nCreated Successfully", 2)
+        stop_scheduler(stop_event2)
     else:
         print("...............")
     display_status_table(status_table)
+    show_notification("Schedule Status\nCreated Successfully\nRestart the scheduler\nIf started !!", 3, "yellow")
+
+def startScheduler(lock, stop):
+    on_notify("To navigate to another interface you will\nneed to STOP the Scheduler first", "orange")
+    start_scheduler(lock, stop)
 
 def display_status_table(status_table):
     headers = ["Media?", "Path or Content", "Media message", "Scheduled Time", "Actions"]

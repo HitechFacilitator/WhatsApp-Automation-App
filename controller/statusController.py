@@ -2,6 +2,7 @@ import os
 import pyautogui
 from time import *
 import datetime
+import threading
 import schedule
 from model.db import Session, Status, Message, ScheduledOperation
 from utils.oppenZapp import *
@@ -57,7 +58,7 @@ def postStatus(lock, content, text, media):
         print(f"[{datetime.datetime.now()}] Posting media located at '{content}'...")
         sleep(1)
         try:
-            oppened = OppenClosedZapp()
+            oppened = OppenClosedZapp(True)
             sleep(1)
 
             try :
@@ -74,7 +75,7 @@ def postStatus(lock, content, text, media):
                         print("Exception Caught : Couldn't found the status_unread image")
                         raise
         
-            sleep(1)
+            sleep(1.5)
             pyautogui.click(pyautogui.locateCenterOnScreen("controller/image/status_add.png", confidence=0.8))
             pyautogui.press("down")
             if media == True:
@@ -89,6 +90,7 @@ def postStatus(lock, content, text, media):
                     pyautogui.write(text, interval=0.08) 
                 else:
                     print("Status File path does not exist")
+                    pyautogui.alert("Status File path does not exist")
                     raise
                     return
             else:
@@ -111,7 +113,7 @@ def postStatus(lock, content, text, media):
             print(f"Error running scheduled tasks: {e}")
             return
 
-def scheduleStatus(lock):
+def scheduleStatus(lock, stop):
     session = Session()  # Create a session
     now = datetime.datetime.utcnow()
     pending_status = session.query(Status).all()
@@ -133,12 +135,21 @@ def scheduleStatus(lock):
 
     print("Status Scheduler is running. Waiting to post status...\n\n")
 
-    while True:
+    while not stop.is_set():
         try:
             schedule.run_pending()
         except Exception as e:
             print(f"Error running scheduled tasks: {e}")
             sleep(1)
+
+def start_scheduler(lock, stop):
+    stop.clear()  # Ensure the stop event is not set
+    thread2 = threading.Thread(target=scheduleStatus, args=(lock, stop), daemon=True)
+    thread2.start()
+
+def stop_scheduler(stop):
+    stop.set()
+    print("Status Scheduler stopped!")
 
 def getAllStatus():
     session = Session()

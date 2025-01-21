@@ -1,11 +1,18 @@
 import customtkinter as ctk
 from tkinter import Canvas, Frame, Scrollbar, Label
 import tkinter as tk
+import threading
+from multiprocessing import Lock
+from time import sleep
 from PIL import Image, ImageTk
 from controller.messageController import *
 from utils.notifications import *
 
 def show_message_interface(app, controller):
+    lock = Lock()
+    # Create a threading Event to signal when to stop the scheduler
+    stop_event = threading.Event()
+
     for widget in app.winfo_children():
         widget.pack_forget()
     
@@ -29,7 +36,9 @@ def show_message_interface(app, controller):
     header_label = ctk.CTkLabel(header_frame, text="Message Dashboard", font=("Arial", 24, "bold"), text_color="white")
     header_label.pack(side="left", padx=20)
 
-    start_scheduler_button = ctk.CTkButton(header_frame, text="Start Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: print("Scheduler Started"))
+    stop_scheduler_button = ctk.CTkButton(header_frame, text="Stop Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: stop_scheduler(stop_event))
+    stop_scheduler_button.pack(side="right", padx=10, pady=20)
+    start_scheduler_button = ctk.CTkButton(header_frame, text="Start Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: start_scheduler(lock, stop_event))
     start_scheduler_button.pack(side="right", padx=10, pady=20)
 
     # Message Creation Section
@@ -55,7 +64,7 @@ def show_message_interface(app, controller):
     scheduleTime_entry.grid(row=2, column=1, padx=10, pady=10, sticky="w")
 
     # Schedule Button
-    schedule_button = ctk.CTkButton(creation_frame, text="Schedule", width=100, fg_color="#25D366", hover_color="#128C7E", command=lambda: add_a_message(recipient_entry.get(), message_entry.get("1.0", "end"), scheduleTime_entry.get(), message_table))
+    schedule_button = ctk.CTkButton(creation_frame, text="Schedule", width=100, fg_color="#25D366", hover_color="#128C7E", command=lambda: add_a_message(recipient_entry.get(), message_entry.get("1.0", "end"), scheduleTime_entry.get(), message_table, stop_event))
     schedule_button.grid(row=3, column=1, padx=10, pady=10, sticky="e")
 
     # Card Section
@@ -80,7 +89,7 @@ def show_message_interface(app, controller):
 
     display_message_table(message_table)
 
-def add_a_message(recip, msg, time, message_table):
+def add_a_message(recip, msg, time, message_table, stop_event):
     if not recip:
         on_notify("The Receiver name or number is needed", "red")
         return
@@ -88,11 +97,12 @@ def add_a_message(recip, msg, time, message_table):
         on_notify("The message content field is empty", "red")
         return
     flag = createMessage(recip, msg, time)
-    print(flag)
+    # print(flag)
     if flag != "" and flag != None:
         on_notify(flag, "orange", 400,115)
         return
-    show_notification("Schedule Message\nCreated Successfully", 2)
+    show_notification("Schedule Message\nCreated Successfully\nRestart the scheduler\nIf started !!", 3, "yellow")
+    stop_scheduler(stop_event)
     display_message_table(message_table)
 
 def display_message_table(message_table):

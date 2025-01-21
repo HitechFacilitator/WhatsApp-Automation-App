@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import threading
 
-def show_notification(message, duration=3):
+def show_notification(message, duration=3, color="green"):
     # Create a top-level window for the notification
     notification = ctk.CTkToplevel()
     notification.geometry("400x200")
@@ -19,7 +19,7 @@ def show_notification(message, duration=3):
     notification.geometry(f"{window_width}x{window_height}+{x}+{y}")
     
     # Add a message to the notification
-    message_label = ctk.CTkLabel(notification, text=message, font=("Arial", 16), text_color="green")
+    message_label = ctk.CTkLabel(notification, text=message, font=("Arial", 16), text_color=color)
     message_label.pack(pady=10, padx=5)
 
     # Automatically close the notification after the specified duration

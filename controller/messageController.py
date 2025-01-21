@@ -1,5 +1,6 @@
 import pyautogui
 from time import *
+import threading
 import datetime
 import schedule
 from model.db import Session, Message, Status, ScheduledOperation
@@ -59,7 +60,7 @@ def sendMessages(lock, contact, msg):
         print(f"[{datetime.datetime.now()}] Sending message to {contact}...")
         try:
             sleep(0.5)
-            oppene = OppenClosedZapp()
+            oppene = OppenClosedZapp(True)
             sleep(1)
 
             try:
@@ -100,7 +101,7 @@ def sendMessages(lock, contact, msg):
             print("Couldn't send the message to "+contact)
             print(f"Error running scheduled tasks: {e}")
 
-def scheduleMessages(lock):
+def scheduleMessages(lock, stop):
     session = Session()  # Create a session
     now = datetime.datetime.utcnow()
     pending_messages = session.query(Message).all()
@@ -121,13 +122,22 @@ def scheduleMessages(lock):
 
     print("Message Scheduler is running. Waiting to send messages...\n\n")
 
-    while True:
+    while not stop.is_set():
         try:
             schedule.run_pending()
             sleep(1)
         except Exception as e:
             print(f"Error running scheduled tasks: {e}")
             sleep(1)
+
+def start_scheduler(lock, stop):
+    stop.clear()  # Ensure the stop event is not set
+    thread1 = threading.Thread(target=scheduleMessages, args=(lock, stop), daemon=True)
+    thread1.start()
+
+def stop_scheduler(stop):
+    stop.set()
+    print("Message Scheduler stopped!")
 
 def getAllMessages():
     session = Session()
