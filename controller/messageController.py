@@ -72,11 +72,15 @@ def sendMessages(lock, contact, msg):
                 except Exception as e:
                     print("Exception Caught : Couldn't found the chat_read image")
                     try:
-                        pyautogui.click(pyautogui.locateOnScreen('controller/image/burger_line.png', confidence=0.8))
-                        pyautogui.press("Enter")
+                        pyautogui.click(pyautogui.locateOnScreen('controller/image/chat_selected.png', confidence=0.8))
                     except Exception as e:
-                        print("Exception Caught : Couldn't found the burger_line image")
-                        sleep(0.5)
+                        print("Exception Caught : Couldn't found the chat_selected image")
+                        try:
+                            pyautogui.click(pyautogui.locateOnScreen('controller/image/burger_line.png', confidence=0.8))
+                            pyautogui.press("Enter")
+                        except Exception as e:
+                            print("Exception Caught : Couldn't found the burger_line image")
+                            sleep(0.5)
                     
             sleep(1)
             try:
