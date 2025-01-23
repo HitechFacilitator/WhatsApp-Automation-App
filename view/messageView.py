@@ -8,6 +8,8 @@ from PIL import Image, ImageTk
 from controller.messageController import *
 from utils.notifications import *
 
+running = False
+
 def show_message_interface(app, controller):
     lock = Lock()
     # Create a threading Event to signal when to stop the scheduler
@@ -36,9 +38,12 @@ def show_message_interface(app, controller):
     header_label = ctk.CTkLabel(header_frame, text="Message Dashboard", font=("Arial", 24, "bold"), text_color="white")
     header_label.pack(side="left", padx=20)
 
-    stop_scheduler_button = ctk.CTkButton(header_frame, text="Stop Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: stop_scheduler(stop_event))
+    if running:
+        startScheduler_label = ctk.CTkLabel(header_frame, text="Scheduler is running.......", font=("Arial", 14), text_color="red")
+        startScheduler_label.pack(side="right", padx=10, pady=20)
+    stop_scheduler_button = ctk.CTkButton(header_frame, text="Stop Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: stopScheduler(stop_event, controller))
     stop_scheduler_button.pack(side="right", padx=10, pady=20)
-    start_scheduler_button = ctk.CTkButton(header_frame, text="Start Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: start_scheduler(lock, stop_event))
+    start_scheduler_button = ctk.CTkButton(header_frame, text="Start Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: startScheduler(lock, stop_event, controller))
     start_scheduler_button.pack(side="right", padx=10, pady=20)
 
     # Message Creation Section
@@ -104,6 +109,19 @@ def add_a_message(recip, msg, time, message_table, stop_event):
     show_notification("Schedule Message\nCreated Successfully\nRestart the scheduler\nIf started !!", 3, "yellow")
     stop_scheduler(stop_event)
     display_message_table(message_table)
+
+def startScheduler(lock, stop_event, controller):
+    global running
+    running = True
+    controller.show_message_dashboard()
+    # show_notification("Message scheduler running ........", 2, "red")
+    start_scheduler(lock, stop_event)
+
+def stopScheduler(stop_event, controller):
+    global running
+    running = False
+    controller.show_message_dashboard()
+    stop_scheduler(stop_event)
 
 def display_message_table(message_table):
     headers = ["Recipient", "Message", "Scheduled Time", "Actions"]

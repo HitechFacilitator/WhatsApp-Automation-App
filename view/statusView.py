@@ -7,6 +7,8 @@ from controller.statusController import *
 from multiprocessing import Lock
 from utils.notifications import *
 
+running2 = False
+
 def show_status_interface(app, controller):
     lock = Lock()
     # Create a threading Event to signal when to stop the scheduler
@@ -15,7 +17,8 @@ def show_status_interface(app, controller):
     for widget in app.winfo_children():
         widget.pack_forget()
 
-    on_notify("NB \nAutomated Status is not available for the Whatsapp Destop App\nOnly Available on WhatsApp Web" ,"white", 500, 150)
+    if not running2:
+        on_notify("NB \nAutomated Status is not available for the Whatsapp Destop App\nOnly Available on WhatsApp Web" ,"white", 500, 150)
 
     # Background Frame
     status_frame = ctk.CTkFrame(app, fg_color="#075E54")  # WhatsApp dark green
@@ -37,9 +40,12 @@ def show_status_interface(app, controller):
     header_label = ctk.CTkLabel(header_frame, text="Status Dashboard", font=("Arial", 24, "bold"), text_color="white")
     header_label.pack(side="left", padx=20)
 
-    stop_scheduler_button = ctk.CTkButton(header_frame, text="Stop Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: stop_scheduler(stop_event2))
+    if running2:
+        startScheduler_label = ctk.CTkLabel(header_frame, text="Scheduler is running.......", font=("Arial", 14), text_color="red")
+        startScheduler_label.pack(side="right", padx=10, pady=20)
+    stop_scheduler_button = ctk.CTkButton(header_frame, text="Stop Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: stopScheduler(stop_event2, controller))
     stop_scheduler_button.pack(side="right", padx=10, pady=20)
-    start_scheduler_button = ctk.CTkButton(header_frame, text="Start Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: startScheduler(lock, stop_event2))
+    start_scheduler_button = ctk.CTkButton(header_frame, text="Start Scheduler", width=120, fg_color="#128C7E", hover_color="#128C1E", command=lambda: startScheduler(lock, stop_event2, controller))
     start_scheduler_button.pack(side="right", padx=10, pady=20)
 
     # Status Creation Section
@@ -148,9 +154,18 @@ def add_a_status(stop_event2, status_table, path="", msg="", text="", time=""):
     display_status_table(status_table)
     show_notification("Schedule Status\nCreated Successfully\nRestart the scheduler\nIf started !!", 3, "yellow")
 
-def startScheduler(lock, stop_event2):
-    # on_notify("To navigate to another interface you will\nneed to STOP the Scheduler first", "orange")
+def startScheduler(lock, stop_event2, controller):
+    global running2
+    running2 = True
+    controller.show_status_dashboard()
+    # show_notification("Message scheduler running ........", 2, "red")
     start_scheduler(lock, stop_event2)
+
+def stopScheduler(stop_event2, controller):
+    global running2
+    running2 = False
+    controller.show_status_dashboard()
+    stop_scheduler(stop_event2)
 
 def display_status_table(status_table):
     headers = ["Media?", "Path or Content", "Media message", "Scheduled Time", "Actions"]
