@@ -16,6 +16,10 @@ def createStatus(content, media=True, text="", time=""):
     if time == "":
         time = (datetime.datetime.now() + datetime.timedelta(minutes=1)).strftime("%H:%M")
 
+    if not content and text == "":
+        pyautogui.alert("Can't Create the schedule task \nBecause the fields are empty")
+        return
+    
     allStatus = session.query(Status).all()
     allMessages = session.query(Message).all()
 
@@ -58,6 +62,7 @@ def postStatus(lock, content, text, media):
         print(f"[{datetime.datetime.now()}] Posting media located at '{content}'...")
         sleep(1)
         try:
+            sleep(0.5)
             oppened = OppenClosedZapp(True)
             sleep(1)
 
@@ -82,6 +87,7 @@ def postStatus(lock, content, text, media):
                 pyautogui.press("enter")
                 print("Navigating to file explorer...")
                 if os.path.exists(content):
+                    sleep(1)
                     pyautogui.hotkey('ctrl', 'l')
                     sleep(1)
                     pyautogui.write(content, interval=0.08) 
@@ -104,8 +110,9 @@ def postStatus(lock, content, text, media):
                 pyautogui.click(pyautogui.locateOnScreen("controller/image/postImg_button.png", confidence=0.8))
                 print("Status posted successfully!")
             except Exception as e:
-                print("Exception Caught : Post button not found.")
-                raise
+                sleep(1)
+                print("Exception Caught : Post button not found.",e)
+                # raise
                 
         except Exception as e:
             pyautogui.alert("The Automation process could not continue\nAn Error was encountered\n !! Verify your Internet connection !!")
@@ -138,6 +145,7 @@ def scheduleStatus(lock, stop):
     while not stop.is_set():
         try:
             schedule.run_pending()
+            sleep(1)
         except Exception as e:
             print(f"Error running scheduled tasks: {e}")
             sleep(1)

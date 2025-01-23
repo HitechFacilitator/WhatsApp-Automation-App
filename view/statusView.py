@@ -148,9 +148,9 @@ def add_a_status(stop_event2, status_table, path="", msg="", text="", time=""):
     display_status_table(status_table)
     show_notification("Schedule Status\nCreated Successfully\nRestart the scheduler\nIf started !!", 3, "yellow")
 
-def startScheduler(lock, stop):
-    on_notify("To navigate to another interface you will\nneed to STOP the Scheduler first", "orange")
-    start_scheduler(lock, stop)
+def startScheduler(lock, stop_event2):
+    # on_notify("To navigate to another interface you will\nneed to STOP the Scheduler first", "orange")
+    start_scheduler(lock, stop_event2)
 
 def display_status_table(status_table):
     headers = ["Media?", "Path or Content", "Media message", "Scheduled Time", "Actions"]

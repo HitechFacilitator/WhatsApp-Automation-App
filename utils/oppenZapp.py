@@ -67,6 +67,7 @@ def OppenWhatsapp(web=True) :
         pyautogui.press('enter')
         sleep(1)
         pyautogui.hotkey("win", "up")
+    sleep(1)
 
 
     
